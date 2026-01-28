@@ -1878,7 +1878,7 @@ class _MessagesViewState extends State<MessagesView>
               ChatUIKitDetailContentAction(
                 title:
                     ChatUIKitLocal.contactDetailViewSearch.localString(context),
-                icon: 'assets/images/search_history.png',
+                icon: 'assets/images/chat/search_history.png',
                 packageName: ChatUIKitImageLoader.packageName,
                 iconSize: const Size(32, 32),
                 onTap: (context) {
