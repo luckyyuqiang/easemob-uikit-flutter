@@ -8,7 +8,7 @@ class GroupMemberListViewController with ChatUIKitListViewControllerBase {
     required this.groupId,
     this.willShowHandler,
     this.includeOwner = true,
-    this.pageSize = 200,
+    this.pageSize = 99,
   });
   final String groupId;
   final int pageSize;
@@ -59,7 +59,9 @@ class GroupMemberListViewController with ChatUIKitListViewControllerBase {
 
         cursor = items.cursor;
         ret.addAll(items.data);
-        if (items.data.length < pageSize) {
+        if (items.data.length < pageSize ||
+          items.cursor == null ||
+          (items.cursor != null && items.cursor!.isEmpty)) {
           hasMore = false;
         }
       } catch (e) {
