@@ -65,7 +65,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView>
         ChatUIKitProviderObserver,
         ChatUIKitThemeMixin {
   ValueNotifier<bool> isNotDisturb = ValueNotifier<bool>(false);
-  int memberCount = 0;
+  ValueNotifier<int> memberCount = ValueNotifier<int>(0);
   Group? group;
   ChatUIKitProfile? profile;
   ChatUIKitAppBarModel? appBarModel;
@@ -112,14 +112,14 @@ class _GroupDetailsViewState extends State<GroupDetailsView>
   @override
   void onMemberJoinedFromGroup(String groupId, String member) {
     if (groupId == profile!.id) {
-      memberCount += 1;
+      memberCount.value = memberCount.value + 1;
     }
   }
 
   @override
   void onMemberExitedFromGroup(String groupId, String member) {
     if (groupId == profile!.id) {
-      memberCount -= 1;
+      memberCount.value = memberCount.value - 1;
     }
   }
 
@@ -167,7 +167,7 @@ class _GroupDetailsViewState extends State<GroupDetailsView>
       // 本地不准，暂时不使用本地数据。
       // group = await ChatUIKit.instance.getGroup(groupId: profile!.id);
       group = await ChatUIKit.instance.fetchGroupInfo(groupId: profile!.id);
-      memberCount = group?.memberCount ?? 0;
+      memberCount.value = group?.memberCount ?? 0;
       safeSetState(() {});
     } on ChatError catch (e) {
       debugPrint(e.toString());
@@ -453,20 +453,25 @@ class _GroupDetailsViewState extends State<GroupDetailsView>
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             () {
-              if (memberCount == 0) {
+              if (memberCount.value == 0) {
                 return const SizedBox();
               } else {
-                return Text(
-                  '$memberCount',
-                  textScaler: TextScaler.noScaling,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.color.isDark
-                        ? theme.color.neutralColor6
-                        : theme.color.neutralColor5,
-                    fontSize: theme.font.labelLarge.fontSize,
-                    fontWeight: theme.font.labelLarge.fontWeight,
-                  ),
+                return ValueListenableBuilder(
+                  valueListenable: memberCount,
+                  builder: (context, value, child) {
+                    return Text(
+                      '$value',
+                      textScaler: TextScaler.noScaling,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: theme.color.isDark
+                            ? theme.color.neutralColor6
+                            : theme.color.neutralColor5,
+                        fontSize: theme.font.labelLarge.fontSize,
+                        fontWeight: theme.font.labelLarge.fontWeight,
+                      ),
+                    );
+                  },
                 );
               }
             }(),
